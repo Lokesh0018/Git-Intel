@@ -1,6 +1,10 @@
+import OpenAI from 'openai';
 import skillMapping from '../data/skillMapping.json' with { type: 'json' };
+import { env } from '../config/env.js';
 import type { GithubRepo, RepoSignals } from '../services/githubService.js';
 import type { RepositoryAnalysis } from '../types/domain.js';
+
+const openai = env.OPENAI_API_KEY ? new OpenAI({ apiKey: env.OPENAI_API_KEY }) : undefined;
 
 const configTechnologyMap: Record<string, string> = {
   'package.json': 'node.js',
@@ -71,7 +75,7 @@ function localAnalyze(repo: GithubRepo, signals: RepoSignals): RepositoryAnalysi
     projectType,
     complexityScore,
     detectedSkills: technologies,
-    summary: \ appears to be a \ using \.,
+    summary: `${repo.name} appears to be a ${projectType.toLowerCase()} using ${technologies.slice(0, 6).join(', ') || repo.language || 'general software practices'}.`,
     evidence: [
       { label: 'Technologies detected', value: technologies.length, repositories: [repo.name] },
       { label: 'Languages used', value: Object.keys(signals.languages).join(', ') || repo.language || 'Unknown', repositories: [repo.name] },
@@ -81,5 +85,53 @@ function localAnalyze(repo: GithubRepo, signals: RepoSignals): RepositoryAnalysi
 }
 
 export async function analyzeRepository(repo: GithubRepo, signals: RepoSignals): Promise<RepositoryAnalysis> {
-  return localAnalyze(repo, signals);
+  if (!openai) return localAnalyze(repo, signals);
+
+  const fallback = localAnalyze(repo, signals);
+  const prompt = {
+    repository: {
+      name: repo.name,
+      description: repo.description,
+      language: repo.language,
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      topics: repo.topics,
+      files: signals.files,
+      languages: signals.languages,
+      packageJson: signals.packageJson,
+      readme: signals.readme?.slice(0, 6000)
+    },
+    requiredShape: {
+      projectType: 'string',
+      complexityScore: 'integer 0-100',
+      detectedSkills: ['string'],
+      summary: 'string',
+      evidence: [{ label: 'string', value: 'string or number', repositories: ['string'] }]
+    }
+  };
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: env.OPENAI_MODEL,
+      response_format: { type: 'json_object' },
+      messages: [
+        {
+          role: 'system',
+          content:
+            'You analyze GitHub repositories for recruiter-facing developer intelligence. Return only valid JSON. Be evidence-based and avoid unsupported claims.'
+        },
+        { role: 'user', content: JSON.stringify(prompt) }
+      ],
+      temperature: 0.2
+    });
+    const parsed = JSON.parse(response.choices[0]?.message.content ?? '{}') as RepositoryAnalysis;
+    return {
+      ...fallback,
+      ...parsed,
+      complexityScore: Math.max(0, Math.min(100, Math.round(parsed.complexityScore ?? fallback.complexityScore))),
+      detectedSkills: Array.from(new Set([...(parsed.detectedSkills ?? []), ...fallback.detectedSkills]))
+    };
+  } catch {
+    return fallback;
+  }
 }
