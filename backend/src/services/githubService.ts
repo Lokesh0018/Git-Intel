@@ -1,5 +1,8 @@
 import { env } from '../config/env.js';
+import { MemoryCache } from '../utils/cache.js';
 import { HttpError } from '../utils/httpError.js';
+
+const cache = new MemoryCache(env.CACHE_TTL_SECONDS);
 
 type GithubUser = {
   login: string;
@@ -39,11 +42,14 @@ export type RepoSignals = {
 };
 
 async function githubFetch<T>(path: string, attempt = 1): Promise<T> {
-  const response = await fetch(https://api.github.com\, {
+  const cached = cache.get<T>(path);
+  if (cached) return cached;
+
+  const response = await fetch(`https://api.github.com${path}`, {
     headers: {
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
-      ...(env.GITHUB_TOKEN ? { Authorization: Bearer \ } : {})
+      ...(env.GITHUB_TOKEN ? { Authorization: `Bearer ${env.GITHUB_TOKEN}` } : {})
     }
   });
 
@@ -57,10 +63,12 @@ async function githubFetch<T>(path: string, attempt = 1): Promise<T> {
   }
 
   if (!response.ok) {
-    throw new HttpError(response.status, GitHub request failed for \);
+    throw new HttpError(response.status, `GitHub request failed for ${path}`);
   }
 
-  return (await response.json()) as T;
+  const data = (await response.json()) as T;
+  cache.set(path, data);
+  return data;
 }
 
 async function optionalGithubFetch<T>(path: string, fallback: T): Promise<T> {
@@ -73,12 +81,12 @@ async function optionalGithubFetch<T>(path: string, fallback: T): Promise<T> {
 
 export const githubService = {
   async getUser(username: string) {
-    return githubFetch<GithubUser>(/users/\);
+    return githubFetch<GithubUser>(`/users/${encodeURIComponent(username)}`);
   },
 
   async getRepositories(username: string) {
     const repos = await githubFetch<GithubRepo[]>(
-      /users/\/repos?per_page=100&sort=updated&type=owner
+      `/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`
     );
     return repos.filter((repo) => !repo.fork).slice(0, 24);
   },
@@ -90,15 +98,15 @@ export const githubService = {
       .join('/');
 
     const [languages, contents, commits, pulls, issues] = await Promise.all([
-      optionalGithubFetch<Record<string, number>>(/repos/\/languages, {}),
-      optionalGithubFetch<Array<{ name: string; type: string }>>(/repos/\/contents, []),
-      optionalGithubFetch<unknown[]>(/repos/\/commits?per_page=100, []),
-      optionalGithubFetch<Array<{ merged_at?: string | null }>>(/repos/\/pulls?state=all&per_page=100, []),
-      optionalGithubFetch<unknown[]>(/repos/\/issues?state=all&per_page=100, [])
+      optionalGithubFetch<Record<string, number>>(`/repos/${encodedFullName}/languages`, {}),
+      optionalGithubFetch<Array<{ name: string; type: string }>>(`/repos/${encodedFullName}/contents`, []),
+      optionalGithubFetch<unknown[]>(`/repos/${encodedFullName}/commits?per_page=100`, []),
+      optionalGithubFetch<Array<{ merged_at?: string | null }>>(`/repos/${encodedFullName}/pulls?state=all&per_page=100`, []),
+      optionalGithubFetch<unknown[]>(`/repos/${encodedFullName}/issues?state=all&per_page=100`, [])
     ]);
 
     const readmeResponse = await optionalGithubFetch<{ content?: string; encoding?: string }>(
-      /repos/\/readme,
+      `/repos/${encodedFullName}/readme`,
       {}
     );
     const readme =
@@ -107,7 +115,7 @@ export const githubService = {
         : undefined;
 
     const packageFile = await optionalGithubFetch<{ content?: string; encoding?: string }>(
-      /repos/\/contents/package.json,
+      `/repos/${encodedFullName}/contents/package.json`,
       {}
     );
     let packageJson: Record<string, unknown> | undefined;
