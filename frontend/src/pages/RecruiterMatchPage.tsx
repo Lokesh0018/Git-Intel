@@ -67,8 +67,8 @@ const RecruiterMatchPage: React.FC = () => {
 
   return (
     <div className="page match-page animate-fade-in">
-      <header className="profile-hero" style={{ background: 'linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(108, 99, 255, 0.05)), var(--surface)' }}>
-        <div style={{ width: 64, height: 64, borderRadius: 16, background: 'rgba(255, 255, 255, 0.02)', border: 'var(--glass-border)', display: 'grid', placeItems: 'center', color: 'var(--accent-4)' }}>
+      <header className="profile-hero" style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.04), rgba(239, 28, 37, 0.04)), var(--surface)' }}>
+        <div style={{ width: 64, height: 64, borderRadius: 16, background: 'var(--surface-2)', border: 'var(--glass-border)', display: 'grid', placeItems: 'center', color: 'var(--accent-4)' }}>
           <Sparkles size={32} className="animate-pulse-glow" />
         </div>
         <div className="hero-info" style={{ marginLeft: -12 }}>
@@ -149,7 +149,7 @@ const RecruiterMatchPage: React.FC = () => {
             <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               
               {/* Glowing big circular rating */}
-              <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'rgba(255,255,255,0.015)', border: 'var(--glass-border)', padding: 20, borderRadius: 12 }}>
+              <div style={{ display: 'flex', gap: 24, alignItems: 'center', background: 'var(--surface-3)', border: 'var(--glass-border)', padding: 20, borderRadius: 12 }}>
                 <div style={{
                   width: 90,
                   height: 90,
@@ -158,8 +158,8 @@ const RecruiterMatchPage: React.FC = () => {
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  color: '#080B12',
-                  boxShadow: '0 0 20px rgba(255, 193, 7, 0.3)'
+                  color: 'var(--color-white)',
+                  boxShadow: '0 0 20px rgba(245, 158, 11, 0.25)'
                 }}>
                   <strong style={{ fontSize: 26, fontFamily: 'Outfit' }}>{result.matchPercentage}%</strong>
                 </div>
@@ -170,7 +170,7 @@ const RecruiterMatchPage: React.FC = () => {
               </div>
 
               {/* Recommendation Panel */}
-              <div style={{ background: 'rgba(255, 255, 255, 0.01)', border: 'var(--glass-border)', borderRadius: 12, padding: 20 }}>
+              <div style={{ background: 'var(--surface-3)', border: 'var(--glass-border)', borderRadius: 12, padding: 20 }}>
                 <strong style={{ fontSize: 14, color: 'var(--ink)' }}>AI Hiring Recommendation</strong>
                 <p className="muted" style={{ fontSize: 13, lineHeight: 1.5, margin: '8px 0 0 0' }}>
                   {result.hiringRecommendation}

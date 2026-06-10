@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
       <section style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 40, alignItems: 'center', minHeight: '60vh', position: 'relative' }}>
         
         {/* Floating blurred background highlights */}
-        <div style={{ position: 'absolute', top: -40, left: -40, width: 250, height: 250, borderRadius: '50%', background: 'radial-gradient(circle, rgba(108, 99, 255, 0.08) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }}></div>
+        <div style={{ position: 'absolute', top: -40, left: -40, width: 250, height: 250, borderRadius: '50%', background: 'radial-gradient(circle, rgba(239, 28, 37, 0.05) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }}></div>
 
         <div>
           <p className="eyebrow" style={{ letterSpacing: 3 }}>AI-Powered Screening Platform</p>
@@ -64,7 +64,7 @@ const HomePage: React.FC = () => {
             GitIntel parses candidate source codes, evaluates codebase complexity, audits DevOps configurations, and maps verified skills.
           </p>
 
-          <form className="search-row animate-pulse-glow" onSubmit={handleSubmit} style={{ maxWidth: 500, padding: 4, background: 'rgba(255,255,255,0.015)', border: 'var(--glass-border)', borderRadius: 14 }}>
+          <form className="search-row animate-pulse-glow" onSubmit={handleSubmit} style={{ maxWidth: 500, padding: 4, background: 'var(--surface-3)', border: 'var(--glass-border)', borderRadius: 14 }}>
             <input
               required
               placeholder="Enter GitHub username (e.g. facebook)"
@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
 
         {/* Hero visual: Floating code/repo cards in background */}
         <div className="no-print" style={{ display: 'grid', gap: 16, position: 'relative' }}>
-          <div className="panel tilt-card" style={{ transform: 'rotate(-4deg)', padding: 18, background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(108, 99, 255, 0.2)' }}>
+          <div className="panel tilt-card" style={{ transform: 'rotate(-4deg)', padding: 18, background: 'var(--surface)', borderColor: 'rgba(239, 28, 37, 0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <strong style={{ fontSize: 14, color: 'var(--ink)' }}>react-intelligence-dashboard</strong>
               <span className="tech-chip" style={{ fontSize: 9 }}>Complexity: 92</span>
@@ -89,7 +89,7 @@ const HomePage: React.FC = () => {
             <p className="muted" style={{ fontSize: 11, margin: 0 }}>High evidence of custom hooks, complex state routers, and concurrent rendering hooks.</p>
           </div>
           
-          <div className="panel tilt-card" style={{ transform: 'rotate(2deg) translateX(20px)', padding: 18, background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(0, 212, 255, 0.2)' }}>
+          <div className="panel tilt-card" style={{ transform: 'rotate(2deg) translateX(20px)', padding: 18, background: 'var(--surface)', borderColor: 'rgba(59, 130, 246, 0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <strong style={{ fontSize: 14, color: 'var(--ink)' }}>fastapi-ml-microservice</strong>
               <span className="tech-chip" style={{ fontSize: 9 }}>Complexity: 84</span>
@@ -100,7 +100,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* 2. TRUST METRICS SECTION */}
-      <section className="panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, textAlign: 'center', padding: '24px 16px', background: 'rgba(255, 255, 255, 0.015)' }}>
+      <section className="panel" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, textAlign: 'center', padding: '24px 16px', background: 'var(--surface)' }}>
         <div>
           <span style={{ fontSize: 32, fontWeight: 800, fontFamily: 'Outfit', color: 'var(--accent)' }}>10k+</span>
           <p className="muted" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5, margin: '4px 0 0 0' }}>Profiles Analyzed</p>
@@ -126,21 +126,21 @@ const HomePage: React.FC = () => {
         <p className="muted" style={{ maxWidth: 500, margin: '0 auto 48px auto' }}>A multi-tiered static code analysis mapping repositories to objective skill metrics.</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32, textAlign: 'left' }} className="timeline-path">
-          <div className="panel" style={{ position: 'relative', background: 'rgba(255, 255, 255, 0.01)' }}>
+          <div className="panel" style={{ position: 'relative', background: 'var(--surface)' }}>
             <div className="timeline-dot"></div>
             <span style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--accent-3)', fontWeight: 700, display: 'block', marginBottom: 8 }}>Step 01</span>
             <strong style={{ fontSize: 18, color: 'var(--ink)', display: 'block', marginBottom: 8 }}>Enter GitHub Username</strong>
             <p className="muted" style={{ fontSize: 13, lineHeight: 1.5, margin: 0 }}>Simply input any public username. We authenticate dynamically and retrieve profile metadata along with public repository lists.</p>
           </div>
-
-          <div className="panel" style={{ position: 'relative', background: 'rgba(255, 255, 255, 0.01)' }}>
+ 
+          <div className="panel" style={{ position: 'relative', background: 'var(--surface)' }}>
             <div className="timeline-dot" style={{ background: 'var(--accent)' }}></div>
             <span style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--accent)', fontWeight: 700, display: 'block', marginBottom: 8 }}>Step 02</span>
             <strong style={{ fontSize: 18, color: 'var(--ink)', display: 'block', marginBottom: 8 }}>AI Repository Analysis</strong>
             <p className="muted" style={{ fontSize: 13, lineHeight: 1.5, margin: 0 }}>Our engine crawls and analyzes repository settings, package dependency scopes, file trees, configuration maps, and commit patterns.</p>
           </div>
-
-          <div className="panel" style={{ position: 'relative', background: 'rgba(255, 255, 255, 0.01)' }}>
+ 
+          <div className="panel" style={{ position: 'relative', background: 'var(--surface)' }}>
             <div className="timeline-dot" style={{ background: 'var(--success)' }}></div>
             <span style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--success)', fontWeight: 700, display: 'block', marginBottom: 8 }}>Step 03</span>
             <strong style={{ fontSize: 18, color: 'var(--ink)', display: 'block', marginBottom: 8 }}>Developer Report Generated</strong>
@@ -177,7 +177,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* 5. HEATMAP PREVIEW SECTION */}
-      <section className="panel" style={{ background: 'rgba(255, 255, 255, 0.01)' }}>
+      <section className="panel" style={{ background: 'var(--surface)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
             <h3 style={{ margin: 0 }}>Interactive Contribution Heatmap</h3>
@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* 6. CALL TO ACTION SECTION */}
-      <section className="panel" style={{ padding: '64px 32px', textAlign: 'center', background: 'radial-gradient(circle at center, rgba(108, 99, 255, 0.1) 0%, rgba(8,11,18,0) 80%), var(--surface)', border: '1px solid rgba(108, 99, 255, 0.15)' }}>
+      <section className="panel" style={{ padding: '64px 32px', textAlign: 'center', background: 'radial-gradient(circle at center, rgba(239, 28, 37, 0.05) 0%, transparent 80%), var(--surface)', border: '1px solid rgba(239, 28, 37, 0.15)' }}>
         <h2 style={{ fontSize: 36, fontWeight: 900, marginBottom: 12 }}>Ready to screen candidates objectively?</h2>
         <p className="muted" style={{ maxWidth: 500, margin: '0 auto 32px auto', fontSize: 15 }}>
           Enter a GitHub handle to immediately analyze public portfolios, scoring frameworks, cloud environments, and candidate alignments.

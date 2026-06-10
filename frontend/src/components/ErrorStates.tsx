@@ -85,7 +85,7 @@ const ErrorStates: React.FC<ErrorStatesProps> = ({ type, customMessage, onRetry 
 
   return (
     <div className="panel error-state-panel animate-slide-up" style={{ textAlign: 'center', padding: '48px 32px', maxWidth: 600, margin: '40px auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-      <div className="error-icon-wrapper" style={{ padding: 16, borderRadius: '50%', background: 'rgba(255, 255, 255, 0.02)', border: 'var(--glass-border)' }}>
+      <div className="error-icon-wrapper" style={{ padding: 16, borderRadius: '50%', background: 'var(--surface-3)', border: 'var(--glass-border)' }}>
         {state.icon}
       </div>
       <h2 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>{state.title}</h2>

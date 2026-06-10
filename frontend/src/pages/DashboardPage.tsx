@@ -243,7 +243,7 @@ const DashboardPage: React.FC = () => {
               
               <div className="circular-progress-container">
                 <svg width="140" height="140" viewBox="0 0 140 140">
-                  <circle cx="70" cy="70" r="58" stroke="rgba(255,255,255,0.03)" strokeWidth="8" fill="none" />
+                  <circle cx="70" cy="70" r="58" stroke="var(--surface-2)" strokeWidth="8" fill="none" />
                   <circle
                     cx="70"
                     cy="70"
@@ -264,7 +264,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              <span className="tech-chip" style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', fontWeight: 600 }}>
+              <span className="tech-chip" style={{ background: 'rgba(239, 28, 37, 0.06)', color: 'var(--accent)', fontWeight: 600 }}>
                 Verified Profile
               </span>
             </div>
@@ -385,14 +385,14 @@ const DashboardPage: React.FC = () => {
                   placeholder="Search repository..."
                   value={repoSearch}
                   onChange={(e) => setRepoSearch(e.target.value)}
-                  style={{ padding: '8px 12px 8px 32px', fontSize: 13, background: 'rgba(0,0,0,0.25)', border: 'var(--glass-border)', borderRadius: 8, width: 180 }}
+                  style={{ padding: '8px 12px 8px 32px', fontSize: 13, background: 'var(--surface-2)', border: 'var(--glass-border)', borderRadius: 8, width: 180 }}
                 />
               </div>
 
               <select
                 value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
-                style={{ padding: '8px 12px', fontSize: 13, background: 'rgba(0,0,0,0.25)', border: 'var(--glass-border)', borderRadius: 8, color: 'var(--ink)' }}
+                style={{ padding: '8px 12px', fontSize: 13, background: 'var(--surface-2)', border: 'var(--glass-border)', borderRadius: 8, color: 'var(--ink)' }}
               >
                 <option value="all">All Languages</option>
                 {languagesList.map(lang => (
@@ -403,7 +403,7 @@ const DashboardPage: React.FC = () => {
               <select
                 value={complexityFilter}
                 onChange={(e) => setComplexityFilter(e.target.value)}
-                style={{ padding: '8px 12px', fontSize: 13, background: 'rgba(0,0,0,0.25)', border: 'var(--glass-border)', borderRadius: 8, color: 'var(--ink)' }}
+                style={{ padding: '8px 12px', fontSize: 13, background: 'var(--surface-2)', border: 'var(--glass-border)', borderRadius: 8, color: 'var(--ink)' }}
               >
                 <option value="all">All Complexities</option>
                 <option value="high">High (&ge;70)</option>
@@ -449,7 +449,7 @@ const DashboardPage: React.FC = () => {
                           <span key={tech} className="tech-chip" style={{ fontSize: 9, padding: '2px 6px' }}>{tech}</span>
                         ))}
                         {repo.technologies.length > 3 && (
-                          <span className="tech-chip" style={{ fontSize: 9, padding: '2px 6px', background: 'rgba(255,255,255,0.01)' }}>
+                          <span className="tech-chip" style={{ fontSize: 9, padding: '2px 6px', background: 'var(--surface-3)' }}>
                             +{repo.technologies.length - 3} more
                           </span>
                         )}

@@ -203,7 +203,7 @@ const SkillsAnalyticsPage: React.FC = () => {
       </div>
 
       {/* Developer Context Info Header */}
-      <header className="profile-hero" style={{ background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(108, 99, 255, 0.05)), var(--surface)' }}>
+      <header className="profile-hero" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.04), rgba(239, 28, 37, 0.04)), var(--surface)' }}>
         <img src={bundle.profile.avatarUrl} alt={bundle.profile.username} className="avatar-img" />
         <div className="hero-info">
           <p className="eyebrow" style={{ color: 'var(--accent-3)' }}>Skills Analytics & Taxonomy</p>
@@ -227,7 +227,7 @@ const SkillsAnalyticsPage: React.FC = () => {
               <BarChart data={categoryStats} margin={{ left: -10, right: 10, bottom: 0, top: 0 }}>
                 <XAxis dataKey="name" stroke="var(--muted)" fontSize={11} tickLine={false} />
                 <YAxis stroke="var(--muted)" fontSize={11} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ background: '#0D111C', border: 'var(--glass-border)', borderRadius: 8 }} />
+                <Tooltip cursor={{ fill: 'var(--surface-2)' }} contentStyle={{ background: 'var(--surface)', border: 'var(--glass-border)', borderRadius: 8, color: 'var(--ink)' }} />
                 <Bar dataKey="count" fill="var(--accent)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -240,7 +240,7 @@ const SkillsAnalyticsPage: React.FC = () => {
             <h3>Skill Confidence Index</h3>
             <p className="muted" style={{ fontSize: 12, marginBottom: 12 }}>Derived from codebase volume, commit activity, and variety of technologies.</p>
             
-            <div style={{ position: 'relative', height: 16, background: 'rgba(255,255,255,0.03)', borderRadius: 99, border: 'var(--glass-border)', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', height: 16, background: 'var(--surface-2)', borderRadius: 99, border: 'var(--glass-border)', overflow: 'hidden' }}>
               <div style={{ width: `${confidenceScore}%`, height: '100%', background: 'linear-gradient(90deg, var(--accent) 0%, var(--accent-3) 100%)', borderRadius: 99 }}></div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginTop: 8 }}>
@@ -250,7 +250,7 @@ const SkillsAnalyticsPage: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.01)', border: 'var(--glass-border)', borderRadius: 12, padding: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ background: 'var(--surface-3)', border: 'var(--glass-border)', borderRadius: 12, padding: 16, display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <ShieldCheck size={20} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 2 }} />
             <div>
               <span style={{ fontSize: 13, fontWeight: 600, display: 'block', color: 'var(--ink)' }}>Static Config Verification</span>
@@ -279,8 +279,8 @@ const SkillsAnalyticsPage: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '16px 20px',
-                  background: isSelected ? 'rgba(108, 99, 255, 0.08)' : 'var(--surface)',
-                  borderColor: isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.06)',
+                  background: isSelected ? 'rgba(239, 28, 37, 0.06)' : 'var(--surface)',
+                  borderColor: isSelected ? 'var(--accent)' : 'var(--line)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   width: '100%',
@@ -308,11 +308,11 @@ const SkillsAnalyticsPage: React.FC = () => {
                 {activeCategoryData.repos.map((repoName) => {
                   const repoInfo = bundle.repositories.find(r => r.name === repoName);
                   return (
-                    <div key={repoName} style={{ padding: 16, background: 'rgba(255,255,255,0.015)', border: 'var(--glass-border)', borderRadius: 10 }}>
+                    <div key={repoName} style={{ padding: 16, background: 'var(--surface-3)', border: 'var(--glass-border)', borderRadius: 10 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                         <strong style={{ fontSize: 15, color: 'var(--ink)' }}>{repoName}</strong>
                         {repoInfo && (
-                          <span className="tech-chip" style={{ fontSize: 10, background: 'rgba(108, 99, 255, 0.1)' }}>
+                          <span className="tech-chip" style={{ fontSize: 10, background: 'rgba(239, 28, 37, 0.06)' }}>
                             Complexity: {repoInfo.complexityScore}
                           </span>
                         )}
@@ -370,7 +370,7 @@ const SkillsAnalyticsPage: React.FC = () => {
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <strong style={{ fontFamily: 'Outfit' }}>{tech.count} Repos</strong>
-                      <div style={{ flex: 1, maxWidth: 100, height: 6, background: 'rgba(255,255,255,0.03)', borderRadius: 99, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, maxWidth: 100, height: 6, background: 'var(--surface-2)', borderRadius: 99, overflow: 'hidden' }}>
                         <div style={{ width: `${Math.min(tech.count * 10, 100)}%`, height: '100%', background: 'var(--accent)' }}></div>
                       </div>
                     </div>

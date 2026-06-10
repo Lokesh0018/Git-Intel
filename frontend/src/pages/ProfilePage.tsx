@@ -148,7 +148,7 @@ const ProfilePage: React.FC = () => {
           <p className="muted" style={{ fontSize: 12, marginBottom: 16 }}>Repositories evaluated by GitIntel, ranked by code complexity.</p>
           <div className="repo-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
             {bundle.repositories.slice(0, 4).map((repo) => (
-              <div key={repo.fullName} style={{ border: 'var(--glass-border)', borderRadius: 12, padding: 16, background: 'rgba(255,255,255,0.01)' }}>
+              <div key={repo.fullName} style={{ border: 'var(--glass-border)', borderRadius: 12, padding: 16, background: 'var(--surface-3)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <strong style={{ fontSize: 14, color: 'var(--ink)' }}>{repo.name}</strong>
                   <span className="tech-chip" style={{ fontSize: 9, padding: '2px 6px' }}>Complexity: {repo.complexityScore}</span>

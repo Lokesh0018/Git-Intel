@@ -105,7 +105,7 @@ const AnalysisLoadingPage: React.FC = () => {
       <div style={{ position: 'relative', width: 100, height: 100, marginBottom: 32, display: 'grid', placeItems: 'center' }}>
         <div style={{ position: 'absolute', width: '100%', height: '100%', borderRadius: '50%', background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', opacity: 0.3, animation: 'pulse 1.8s infinite' }}></div>
         <div style={{ position: 'absolute', width: '70%', height: '70%', borderRadius: '50%', background: 'radial-gradient(circle, var(--accent-3) 0%, transparent 70%)', opacity: 0.2, animation: 'pulse 1.8s infinite 0.4s' }}></div>
-        <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'rgba(8, 11, 18, 0.8)', border: '2px solid var(--accent)', display: 'grid', placeItems: 'center', boxShadow: '0 0 20px rgba(108, 99, 255, 0.4)' }}>
+        <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'var(--surface)', border: '2px solid var(--accent)', display: 'grid', placeItems: 'center', boxShadow: '0 0 20px rgba(239, 28, 37, 0.25)' }}>
           <Cpu size={24} className="text-accent animate-pulse-glow" style={{ color: 'var(--accent)' }} />
         </div>
       </div>
@@ -118,7 +118,7 @@ const AnalysisLoadingPage: React.FC = () => {
       </p>
 
       {/* Live Counter Metrics Row */}
-      <div className="panel" style={{ display: 'flex', justifyContent: 'space-around', gap: 20, width: '100%', maxWidth: 600, padding: '16px 24px', marginBottom: 28, background: 'rgba(255, 255, 255, 0.02)' }}>
+      <div className="panel" style={{ display: 'flex', justifyContent: 'space-around', gap: 20, width: '100%', maxWidth: 600, padding: '16px 24px', marginBottom: 28, background: 'var(--surface)' }}>
         <div style={{ textAlign: 'center' }}>
           <span style={{ display: 'block', fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Repositories Scanned</span>
           <span style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Outfit', color: 'var(--accent-3)' }}>{repoCount}</span>
@@ -148,7 +148,7 @@ const AnalysisLoadingPage: React.FC = () => {
                 {isCompleted ? <Check size={14} /> : idx + 1}
               </div>
               <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--ink)' : isCompleted ? 'var(--muted)' : 'rgba(255,255,255,0.2)' }}>
+                <span style={{ fontSize: 14, fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--ink)' : isCompleted ? 'var(--muted)' : 'rgba(0,0,0,0.25)' }}>
                   {stage}
                 </span>
               </div>
