@@ -4,6 +4,8 @@ type AuthContextType = {
   token: string | null;
   email: string | null;
   isAuthenticated: boolean;
+  activeUsername: string | null;
+  setActiveUsername: (username: string | null) => void;
   login: (email: string, token: string) => void;
   logout: () => void;
 };
@@ -11,35 +13,29 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('gitintel_token'));
-  const [email, setEmail] = useState<string | null>(localStorage.getItem('gitintel_email'));
+  const [activeUsername, setActiveUsernameState] = useState<string | null>(localStorage.getItem('gitintel_active_user'));
 
-  const login = (userEmail: string, userToken: string) => {
-    localStorage.setItem('gitintel_token', userToken);
-    localStorage.setItem('gitintel_email', userEmail);
-    setToken(userToken);
-    setEmail(userEmail);
+  const setActiveUsername = (username: string | null) => {
+    if (username) {
+      localStorage.setItem('gitintel_active_user', username);
+    } else {
+      localStorage.removeItem('gitintel_active_user');
+    }
+    setActiveUsernameState(username);
   };
-
-  const logout = () => {
-    localStorage.removeItem('gitintel_token');
-    localStorage.removeItem('gitintel_email');
-    setToken(null);
-    setEmail(null);
-  };
-
-  // Synchronize state across tabs if local storage changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setToken(localStorage.getItem('gitintel_token'));
-      setEmail(localStorage.getItem('gitintel_email'));
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
 
   return (
-    <AuthContext.Provider value={{ token, email, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        token: null,
+        email: 'Public Session',
+        isAuthenticated: true,
+        activeUsername,
+        setActiveUsername,
+        login: () => {},
+        logout: () => {}
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -18,8 +18,7 @@ GitIntel turns a GitHub username into an evidence-based, recruiter-friendly deve
 - **Framework:** Node.js, Express.js (TypeScript)
 - **Database:** MongoDB via Mongoose
 - **AI Integration:** OpenAI API (GPT-4o-mini) with automatic local rule-based fallback
-- **Authentication:** JWT & Password Hashing (bcryptjs)
-- **Security:** Helmet, CORS, and Express Rate Limiter
+- **Security:** Helmet and CORS
 
 ---
 
@@ -57,18 +56,10 @@ GitIntel/
 
 ## API Documentation
 
-All routes (except Auth and public sharing/reports) require a valid JWT bearer token in the `Authorization` header: `Authorization: Bearer <token>`.
-
-### Authentication Routes
-- **POST `/api/auth/register`**
-  - Payload: `{ "email": "recruiter@company.com", "password": "securepassword" }`
-  - Returns: JWT Token and user email.
-- **POST `/api/auth/login`**
-  - Payload: `{ "email": "recruiter@company.com", "password": "securepassword" }`
-  - Returns: JWT Token and user email.
+All routes are fully public and do not require authentication headers.
 
 ### Analysis & Report Routes
-- **POST `/api/analyze` (Authenticated)**
+- **POST `/api/analyze`**
   - Payload: `{ "username": "github-username" }`
   - Returns: Detailed `ProfileBundle` (profile metadata, analysed repositories, scores, strengths, weaknesses, recommended roles).
 - **GET `/api/profile/:username`**
@@ -79,7 +70,7 @@ All routes (except Auth and public sharing/reports) require a valid JWT bearer t
   - Returns: Specific numeric ratings (Backend, DevOps, Testing, Security, Consistency, Impact, Collaboration) with supporting evidence.
 - **GET `/api/insights/:username`**
   - Returns: Career role matches, strengths lists, and weaknesses lists.
-- **POST `/api/job-match` (Authenticated)**
+- **POST `/api/job-match`**
   - Payload: `{ "username": "github-username", "jobDescription": "Full Job Description text..." }`
   - Returns: Matching percentage, strengths, missing skills list, and hiring recommendations.
 - **GET `/api/report/:username`**
