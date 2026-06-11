@@ -2,24 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { AlertCircle, Play } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 
 const UsernameAnalyzer: React.FC = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault();
     const targetUsername = username.trim();
     if (!targetUsername) return;
-
-    if (!isAuthenticated) {
-      setError('Please register or log in to analyze developer profiles.');
-      return;
-    }
 
     setLoading(true);
     setError('');

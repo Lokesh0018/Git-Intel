@@ -6,7 +6,13 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'http://localhost:4000',
+      '/analyze': 'http://localhost:4000',
+      '/profile': 'http://localhost:4000',
+      '/skills': 'http://localhost:4000',
+      '/scores': 'http://localhost:4000',
+      '/insights': 'http://localhost:4000',
+      '/job-match': 'http://localhost:4000',
+      '/report': 'http://localhost:4000',
       '/health': 'http://localhost:4000'
     }
   }

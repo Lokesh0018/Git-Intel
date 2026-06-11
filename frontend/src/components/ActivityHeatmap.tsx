@@ -11,28 +11,42 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ repositories }) => {
   const now = new Date();
   
   // Backfill contributions from repos
-  repositories.forEach((repo) => {
-    const pushDateStr = repo.pushedAt;
-    if (!pushDateStr) return;
-    
-    const pushDate = new Date(pushDateStr);
-    if (isNaN(pushDate.getTime())) return;
-    
-    // Find difference in days between now and repository push date
-    const diffTime = Math.abs(now.getTime() - pushDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    // Spread commits over the 30 days prior to the push date
-    const totalCommits = repo.commits || 5;
-    for (let c = 0; c < totalCommits; c++) {
-      // Semi-random distribution of commits within 30 days prior to push date
-      const offset = Math.floor(Math.random() * 30);
-      const targetDayIndex = daysInYear - 1 - (diffDays + offset);
-      if (targetDayIndex >= 0 && targetDayIndex < daysInYear) {
-        contributionGrid[targetDayIndex] += 1;
+  if (repositories.length === 0) {
+    // Generate a beautiful mock contribution history for empty/preview state
+    for (let i = 0; i < daysInYear; i++) {
+      const rand = Math.random();
+      if (rand > 0.85) {
+        contributionGrid[i] = Math.floor(Math.random() * 8) + 1;
+      } else if (rand > 0.5) {
+        contributionGrid[i] = Math.floor(Math.random() * 3) + 1;
+      } else {
+        contributionGrid[i] = 0;
       }
     }
-  });
+  } else {
+    repositories.forEach((repo) => {
+      const pushDateStr = repo.pushedAt;
+      if (!pushDateStr) return;
+      
+      const pushDate = new Date(pushDateStr);
+      if (isNaN(pushDate.getTime())) return;
+      
+      // Find difference in days between now and repository push date
+      const diffTime = Math.abs(now.getTime() - pushDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Spread commits over the 30 days prior to the push date
+      const totalCommits = repo.commits || 5;
+      for (let c = 0; c < totalCommits; c++) {
+        // Semi-random distribution of commits within 30 days prior to push date
+        const offset = Math.floor(Math.random() * 30);
+        const targetDayIndex = daysInYear - 1 - (diffDays + offset);
+        if (targetDayIndex >= 0 && targetDayIndex < daysInYear) {
+          contributionGrid[targetDayIndex] += 1;
+        }
+      }
+    });
+  }
 
   // Group days into 53 weeks
   const weeks: number[][] = [];
