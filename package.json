@@ -4,19 +4,14 @@
   "version": "0.1.0",
   "description": "AI-powered developer intelligence platform for GitHub profiles.",
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
-    "build": "npm run build --workspace backend && npm run build --workspace frontend",
-    "lint": "npm run lint --workspace backend && npm run lint --workspace frontend",
-    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
-    "start": "npm run start --workspace backend"
+    "dev": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "lint": "npm run lint --workspace frontend",
+    "typecheck": "npm run typecheck --workspace frontend"
   },
   "workspaces": [
-    "backend",
     "frontend"
   ],
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"

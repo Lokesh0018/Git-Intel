@@ -1,5 +1,3 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '';
-
 export type EvidenceItem = {
   label: string;
   value: string | number;
@@ -61,53 +59,84 @@ export type JobMatch = {
   hiringRecommendation: string;
 };
 
-function token() {
-  return localStorage.getItem('gitintel_token');
-}
-
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token() ? { Authorization: `Bearer ${token()}` } : {}),
-      ...options.headers
-    }
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message ?? 'Request failed');
-  return data as T;
-}
+import { storage } from './storage';
+import { githubService } from './github';
+import { analyzerService } from './analyzer';
 
 export const api = {
-  async register(email: string, password: string) {
-    const result = await request<{ token: string; user: { email: string } }>('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password })
+  async analyze(username: string): Promise<ProfileBundle> {
+    // 1. Check if we already have it in storage to save API calls
+    let existing = storage.getCandidate(username);
+    if (existing) {
+      // We could re-analyze or just return existing. We will fetch fresh.
+    }
+
+    try {
+      const profile = await githubService.getUserProfile(username);
+      const repos = await githubService.getUserRepositories(username);
+      
+      const languagesMap: Record<string, Record<string, number>> = {};
+      
+      // Limit to top 10 recent repos for language analysis to avoid excessive API calls
+      const topRepos = repos.slice(0, 10);
+      await Promise.all(topRepos.map(async (repo) => {
+        try {
+          languagesMap[repo.name] = await githubService.getLanguages(username, repo.name);
+        } catch (e) {
+          console.warn(`Could not fetch languages for ${repo.name}`);
+        }
+      }));
+
+      const bundle = analyzerService.analyze(profile, repos, languagesMap);
+      return bundle;
+    } catch (e: any) {
+      throw new Error(e.message || 'Failed to analyze candidate');
+    }
+  },
+  
+  async profile(username: string): Promise<ProfileBundle> {
+    const candidate = storage.getCandidate(username);
+    if (!candidate) throw new Error('Candidate not found locally. Please analyze first.');
+    return candidate;
+  },
+
+  async jobMatch(username: string, jobDescription: string): Promise<JobMatch> {
+    const candidate = storage.getCandidate(username);
+    if (!candidate) throw new Error('Candidate not found locally.');
+    
+    // Deterministic mock job match based on candidate's strengths and the job description
+    const descLower = jobDescription.toLowerCase();
+    let matchPercentage = 50;
+    const requiredSkills: string[] = [];
+    
+    // Simple heuristic: if desc contains tech from candidate strengths, boost score
+    candidate.insights.strengths.forEach(s => {
+      if (descLower.includes(s.toLowerCase())) {
+        matchPercentage += 10;
+        requiredSkills.push(s);
+      }
     });
-    localStorage.setItem('gitintel_token', result.token);
-    localStorage.setItem('gitintel_email', result.user.email);
-    return result;
+
+    matchPercentage = Math.min(100, Math.max(0, matchPercentage + Math.round(candidate.scores.overall.score / 5)));
+    
+    let recommendation = 'Consider';
+    if (matchPercentage > 85) recommendation = 'Highly Recommended';
+    else if (matchPercentage > 70) recommendation = 'Recommended';
+    else if (matchPercentage < 50) recommendation = 'Not Recommended';
+
+    return {
+      matchPercentage,
+      requiredSkills: requiredSkills.length ? requiredSkills : ['General Programming'],
+      technologies: candidate.insights.strengths,
+      strengths: candidate.insights.strengths,
+      missingSkills: ['Specific domain knowledge'], // Mocked
+      hiringRecommendation: recommendation
+    };
   },
-  async login(email: string, password: string) {
-    const result = await request<{ token: string; user: { email: string } }>('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password })
-    });
-    localStorage.setItem('gitintel_token', result.token);
-    localStorage.setItem('gitintel_email', result.user.email);
-    return result;
-  },
-  analyze(username: string) {
-    return request<ProfileBundle>('/analyze', { method: 'POST', body: JSON.stringify({ username }) });
-  },
-  profile(usernameOrToken: string) {
-    return request<ProfileBundle>(`/profile/${encodeURIComponent(usernameOrToken)}`);
-  },
-  jobMatch(username: string, jobDescription: string) {
-    return request<JobMatch>('/job-match', { method: 'POST', body: JSON.stringify({ username, jobDescription }) });
-  },
-  report(username: string) {
-    return request<ProfileBundle>(`/report/${encodeURIComponent(username)}`);
+
+  async report(username: string): Promise<ProfileBundle> {
+    const candidate = storage.getCandidate(username);
+    if (!candidate) throw new Error('Report not found locally.');
+    return candidate;
   }
 };

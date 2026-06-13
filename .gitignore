@@ -8,3 +8,4 @@ coverage/
 .DS_Store
 frontend/.vite/
 backend/uploads/
+package-lock.json
