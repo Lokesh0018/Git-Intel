@@ -76,6 +76,7 @@ export const api = {
       const repos = await githubService.getUserRepositories(username);
       
       const languagesMap: Record<string, Record<string, number>> = {};
+      const packageJsonsMap: Record<string, any> = {};
       
       // Limit to top 10 recent repos for language analysis to avoid excessive API calls
       const topRepos = repos.slice(0, 10);
@@ -85,9 +86,14 @@ export const api = {
         } catch (e) {
           console.warn(`Could not fetch languages for ${repo.name}`);
         }
+        try {
+          packageJsonsMap[repo.name] = await githubService.getPackageJson(username, repo.name);
+        } catch (e) {
+          console.warn(`Could not fetch package.json for ${repo.name}`);
+        }
       }));
 
-      const bundle = analyzerService.analyze(profile, repos, languagesMap);
+      const bundle = analyzerService.analyze(profile, repos, languagesMap, packageJsonsMap);
       return bundle;
     } catch (e: any) {
       throw new Error(e.message || 'Failed to analyze candidate');

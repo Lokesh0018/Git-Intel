@@ -4,7 +4,11 @@ import { Activity, Code, Star, Users } from 'lucide-react';
 import { storage } from '../services/storage';
 import { ProfileBundle } from '../services/api';
 
-const SKILLS = ['React', 'Node.js', 'Python', 'Java', 'TypeScript', 'Go', 'Rust', 'Vue'];
+const SKILLS = [
+  'React', 'Node.js', 'Express', 'Python', 'Java', 'TypeScript', 
+  'Go', 'Rust', 'Vue', 'Angular', 'Next.js', 'C++', 'C#', 
+  'Ruby', 'PHP', 'Swift', 'Kotlin', 'SQL', 'Docker', 'AWS', 'Jest'
+];
 
 export default function SkillBenchmarkPage() {
   const [candidates, setCandidates] = useState<ProfileBundle[]>([]);

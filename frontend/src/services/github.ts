@@ -34,5 +34,18 @@ export const githubService = {
   
   async getLanguages(username: string, repo: string) {
     return fetchGithub<Record<string, number>>(`/repos/${username}/${repo}/languages`);
+  },
+
+  async getPackageJson(username: string, repo: string) {
+    try {
+      const response = await fetchGithub<any>(`/repos/${username}/${repo}/contents/package.json`);
+      if (response && response.content) {
+        const decoded = decodeURIComponent(escape(atob(response.content.replace(/\n/g, ''))));
+        return JSON.parse(decoded);
+      }
+    } catch (e) {
+      // Ignore errors if package.json does not exist
+    }
+    return null;
   }
 };

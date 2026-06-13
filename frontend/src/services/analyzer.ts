@@ -8,7 +8,7 @@ function calculateScoreCategory(score: number, evidence: EvidenceItem[]): ScoreC
 }
 
 export const analyzerService = {
-  analyze(profileData: any, reposData: any[], languagesMap: Record<string, Record<string, number>>): ProfileBundle {
+  analyze(profileData: any, reposData: any[], languagesMap: Record<string, Record<string, number>>, packageJsonsMap: Record<string, any> = {}): ProfileBundle {
     // 1. Analyze Profile
     const followers = profileData.followers || 0;
     const publicRepos = profileData.public_repos || 0;
@@ -27,6 +27,32 @@ export const analyzerService = {
       
       const repoLangs = languagesMap[repo.name] || {};
       const techs = Object.keys(repoLangs);
+      
+      const pkg = packageJsonsMap[repo.name];
+      if (pkg) {
+        const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+        if (deps['react'] || deps['react-dom'] || deps['@types/react']) {
+          if (!techs.includes('React')) techs.push('React');
+        }
+        if (deps['express'] || deps['@types/express']) {
+          if (!techs.includes('Node.js')) techs.push('Node.js');
+          if (!techs.includes('Express')) techs.push('Express');
+        }
+        if (deps['next']) {
+          if (!techs.includes('Next.js')) techs.push('Next.js');
+          if (!techs.includes('React')) techs.push('React');
+        }
+        if (deps['vue']) {
+          if (!techs.includes('Vue')) techs.push('Vue');
+        }
+        if (deps['@angular/core']) {
+          if (!techs.includes('Angular')) techs.push('Angular');
+        }
+        if (deps['jest']) {
+          if (!techs.includes('Jest')) techs.push('Jest');
+        }
+      }
+
       techs.forEach(t => allTechnologies.add(t));
       
       const complexityScore = Math.min(100, (repo.size / 1000) * 10 + (repo.stargazers_count * 2));
