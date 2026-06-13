@@ -99,15 +99,15 @@ export const api = {
     return result;
   },
   analyze(username: string) {
-    return request<ProfileBundle>('/api/analyze', { method: 'POST', body: JSON.stringify({ username }) });
+    return request<ProfileBundle>('/analyze', { method: 'POST', body: JSON.stringify({ username }) });
   },
   profile(usernameOrToken: string) {
-    return request<ProfileBundle>(`/api/profile/${encodeURIComponent(usernameOrToken)}`);
+    return request<ProfileBundle>(`/profile/${encodeURIComponent(usernameOrToken)}`);
   },
   jobMatch(username: string, jobDescription: string) {
-    return request<JobMatch>('/api/job-match', { method: 'POST', body: JSON.stringify({ username, jobDescription }) });
+    return request<JobMatch>('/job-match', { method: 'POST', body: JSON.stringify({ username, jobDescription }) });
   },
   report(username: string) {
-    return request<ProfileBundle>(`/api/report/${encodeURIComponent(username)}`);
+    return request<ProfileBundle>(`/report/${encodeURIComponent(username)}`);
   }
 };
