@@ -20,6 +20,7 @@ export const analyzerService = {
     let totalForks = 0;
     let totalCommitsApproximation = 0; // Using repo size/activity as proxy since commits require too many API calls
     const allTechnologies = new Set<string>();
+    const techFrequency: Record<string, number> = {};
     
     const analyzedRepos = reposData.map(repo => {
       totalStars += repo.stargazers_count;
@@ -53,7 +54,16 @@ export const analyzerService = {
         }
       }
 
-      techs.forEach(t => allTechnologies.add(t));
+      // Infer TSX/JSX
+      if (techs.includes('React') || techs.includes('Next.js')) {
+        if (techs.includes('TypeScript') && !techs.includes('TSX')) techs.push('TSX');
+        if (techs.includes('JavaScript') && !techs.includes('JSX')) techs.push('JSX');
+      }
+
+      techs.forEach(t => {
+        allTechnologies.add(t);
+        techFrequency[t] = (techFrequency[t] || 0) + 1;
+      });
       
       const complexityScore = Math.min(100, (repo.size / 1000) * 10 + (repo.stargazers_count * 2));
       totalCommitsApproximation += repo.size / 100;
@@ -107,8 +117,10 @@ export const analyzerService = {
     else if (experienceScore > 60) expLevel = 'Senior';
     else if (experienceScore > 40) expLevel = 'Mid-Level';
 
-    const techArray = Array.from(allTechnologies);
-    const strengths = techArray.slice(0, 5);
+    const strengths = Object.entries(techFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .map(entry => entry[0])
+      .slice(0, 10);
 
     return {
       profile: {

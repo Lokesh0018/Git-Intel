@@ -5,9 +5,10 @@ import { storage } from '../services/storage';
 import { ProfileBundle } from '../services/api';
 
 const SKILLS = [
-  'React', 'Node.js', 'Express', 'Python', 'Java', 'TypeScript', 
-  'Go', 'Rust', 'Vue', 'Angular', 'Next.js', 'C++', 'C#', 
-  'Ruby', 'PHP', 'Swift', 'Kotlin', 'SQL', 'Docker', 'AWS', 'Jest'
+  'JavaScript', 'TypeScript', 'React', 'TSX', 'JSX', 'HTML', 'CSS', 
+  'Node.js', 'Express', 'Python', 'Java', 'Go', 'Rust', 'Vue', 'Angular', 
+  'Next.js', 'C++', 'C#', 'Ruby', 'PHP', 'Swift', 'Kotlin', 'SQL', 
+  'Docker', 'AWS', 'Jest'
 ];
 
 export default function SkillBenchmarkPage() {
@@ -26,7 +27,8 @@ export default function SkillBenchmarkPage() {
   ];
 
   const poolCandidatesWithSkill = candidates.filter(c => 
-    c.insights.strengths.some(s => s.toLowerCase().includes(selectedSkill.toLowerCase()))
+    c.insights.strengths.some(s => s.toLowerCase().includes(selectedSkill.toLowerCase())) ||
+    c.repositories.some(r => r.technologies.some(t => t.toLowerCase().includes(selectedSkill.toLowerCase())))
   );
 
   return (
@@ -83,7 +85,15 @@ export default function SkillBenchmarkPage() {
           ) : (
             <div className="flex flex-col gap-4" style={{ overflowY: 'auto', maxHeight: '300px', paddingRight: '1rem' }}>
               {poolCandidatesWithSkill.map(c => {
-                const conf = 95 - (c.insights.strengths.findIndex(s => s.toLowerCase().includes(selectedSkill.toLowerCase())) * 5);
+                let conf = 0;
+                const strengthIndex = c.insights.strengths.findIndex(s => s.toLowerCase().includes(selectedSkill.toLowerCase()));
+                if (strengthIndex >= 0) {
+                  conf = 95 - (strengthIndex * 5);
+                } else {
+                  const repoCount = c.repositories.filter(r => r.technologies.some(t => t.toLowerCase().includes(selectedSkill.toLowerCase()))).length;
+                  conf = Math.min(75, 40 + (repoCount * 5));
+                }
+                
                 return (
                   <div key={c.profile.username} className="flex items-center gap-4 p-3" style={{ border: '1px solid var(--border-color)', borderRadius: '8px' }}>
                     <img src={c.profile.avatarUrl} alt="" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
