@@ -1,22 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import RepositoryCard from '../components/RepositoryCard';
 import { api, type ProfileBundle } from '../services/api';
-import { ShieldAlert, Github, Star } from 'lucide-react';
+import ErrorStates from '../components/ErrorStates';
+import { ShieldAlert, Github, Star, Printer, Share2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 const ProfilePage: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
+  const { username, token } = useParams<{ username?: string; token?: string }>();
+  const navigate = useNavigate();
   const [bundle, setBundle] = useState<ProfileBundle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     const loadProfile = async () => {
-      if (!username) return;
+      const identifier = username || token;
+      if (!identifier) return;
       setLoading(true);
       setError('');
       try {
-        const result = await api.profile(username);
+        const result = await api.profile(identifier);
         setBundle(result);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unable to load profile');
@@ -25,57 +29,147 @@ const ProfilePage: React.FC = () => {
       }
     };
     loadProfile();
-  }, [username]);
+  }, [username, token]);
+
+  const handleShareLink = () => {
+    if (!bundle) return;
+    const shareUrl = window.location.href;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareCopied(true);
+      window.dispatchEvent(new CustomEvent('show-toast', { detail: { message: 'Public portfolio link copied!' } }));
+      setTimeout(() => setShareCopied(false), 3000);
+    });
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Distinct technologies
+  const technologies = useMemo(() => {
+    if (!bundle) return [];
+    return Array.from(new Set(bundle.repositories.flatMap((repo) => repo.technologies))).slice(0, 18);
+  }, [bundle]);
 
   if (loading) {
     return (
-      <div className="profile-standalone-loading">
+      <div className="profile-standalone-loading" style={{ minHeight: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <p className="muted">Retrieving candidate profile portfolio...</p>
       </div>
     );
   }
 
   if (error || !bundle) {
-    return (
-      <div className="profile-standalone-error">
-        <ShieldAlert size={48} color="#a73523" />
-        <h2>Profile Not Found</h2>
-        <p className="error">{error || 'This developer profile has not been analyzed yet.'}</p>
-      </div>
-    );
+    return <ErrorStates type="not-found" customMessage={error} />;
   }
 
   return (
-    <div className="profile-standalone-page">
-      <header className="profile-standalone-header">
-        <div className="brand-standalone">
-          <Github size={20} />
-          <strong>GitIntel Portfolio</strong>
+    <div className="profile-standalone-page animate-fade-in">
+      
+      {/* Top Header controls (hidden when printing) */}
+      <header className="profile-standalone-header no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: 'var(--glass-border)', paddingBottom: 16, marginBottom: 32 }}>
+        <button className="ghost flex-btn" onClick={() => navigate(-1)}>
+          <ArrowLeft size={14} />
+          <span>Back</span>
+        </button>
+        <div className="brand-standalone" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Github size={18} />
+          <strong style={{ fontFamily: 'Outfit', fontSize: 16 }}>GitIntel Verified Portfolio</strong>
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="ghost flex-btn" onClick={handleShareLink}>
+            <Share2 size={14} />
+            <span>{shareCopied ? 'Copied Link' : 'Copy Link'}</span>
+          </button>
+          <button className="primary flex-btn" onClick={handlePrint} style={{ minHeight: 32 }}>
+            <Printer size={14} />
+            <span>Print / Save PDF</span>
+          </button>
         </div>
       </header>
-      
+
+      {/* Main A4 Optimized Report body */}
       <div className="profile-standalone-container">
-        <section className="profile-hero compact">
-          <img src={bundle.profile.avatarUrl} alt={bundle.profile.username} />
+        
+        {/* Hero Candidate context */}
+        <section className="profile-hero" style={{ padding: 24, border: 'var(--glass-border)', borderRadius: 16, display: 'grid', gridTemplateColumns: '100px 1fr', gap: 24, alignItems: 'center' }}>
+          <img src={bundle.profile.avatarUrl} alt={bundle.profile.username} style={{ width: 100, height: 100, borderRadius: 12, objectFit: 'cover' }} />
           <div>
-            <p className="eyebrow">Evidence-based Portfolio</p>
-            <h1>{bundle.profile.name || bundle.profile.username}</h1>
-            <p className="lede">{bundle.profile.bio || bundle.insights.summary}</p>
+            <p className="eyebrow" style={{ color: 'var(--accent-3)', fontSize: 10, marginBottom: 4 }}>Candidate Verification Summary</p>
+            <h1 style={{ fontSize: 28, fontWeight: 800, margin: '0 0 6px 0', background: 'none', WebkitTextFillColor: 'initial', color: 'var(--ink)' }}>
+              {bundle.profile.name || bundle.profile.username}
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--muted)', margin: '0 0 10px 0', lineHeight: 1.5 }}>
+              {bundle.profile.bio || 'Public portfolio generated by GitIntel.'}
+            </p>
+            <div className="repo-meta" style={{ marginTop: 0 }}>
+              <span className="tech-chip" style={{ fontSize: 10 }}>@{bundle.profile.username}</span>
+              <span className="tech-chip" style={{ fontSize: 10 }}>{bundle.profile.publicRepos} Repositories</span>
+              <span className="tech-chip" style={{ fontSize: 10 }}>{bundle.profile.followers} Followers</span>
+            </div>
           </div>
         </section>
 
-        <section className="panel" style={{ marginTop: 24 }}>
-          <h2>Repository Portfolio</h2>
-          <p className="muted" style={{ marginBottom: 20 }}>
-            Curated list of public repositories sorted by engineering complexity and stars.
+        {/* AI Overview Summary */}
+        <section className="panel" style={{ marginTop: 24, padding: 24 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>AI Talent Summary</h2>
+          <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0, color: 'var(--ink)' }}>
+            {bundle.insights.summary}
           </p>
-          <div className="repo-grid">
-            {bundle.repositories.map((repo) => (
-              <RepositoryCard key={repo.fullName} repository={repo} />
+        </section>
+
+        {/* Verified skills / technologies cloud */}
+        <section className="panel" style={{ marginTop: 24, padding: 24 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>Verified Technology Stack</h2>
+          <p className="muted" style={{ fontSize: 12, marginBottom: 16 }}>Frameworks and engines extracted from files and verified in candidate codebase.</p>
+          <div className="chips">
+            {technologies.map(tech => (
+              <span key={tech} className="tech-chip" style={{ fontSize: 11, padding: '4px 10px' }}>{tech}</span>
             ))}
           </div>
         </section>
+
+        {/* Highlight strengths */}
+        <section className="panel" style={{ marginTop: 24, padding: 24 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>Key Strengths</h2>
+          <ul className="clean-list" style={{ display: 'grid', gap: 12 }}>
+            {bundle.insights.strengths.slice(0, 4).map((str, idx) => (
+              <li key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 14 }}>
+                <CheckCircle2 size={16} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 2 }} />
+                <span>{str}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Curated Repository Portfolios */}
+        <section className="panel" style={{ marginTop: 24, padding: 24 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>Top Codebase Portfolios</h2>
+          <p className="muted" style={{ fontSize: 12, marginBottom: 16 }}>Repositories evaluated by GitIntel, ranked by code complexity.</p>
+          <div className="repo-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+            {bundle.repositories.slice(0, 4).map((repo) => (
+              <div key={repo.fullName} style={{ border: 'var(--glass-border)', borderRadius: 12, padding: 16, background: 'rgba(255,255,255,0.01)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <strong style={{ fontSize: 14, color: 'var(--ink)' }}>{repo.name}</strong>
+                  <span className="tech-chip" style={{ fontSize: 9, padding: '2px 6px' }}>Complexity: {repo.complexityScore}</span>
+                </div>
+                <p className="muted" style={{ fontSize: 12, margin: '0 0 10px 0', lineHeight: 1.4 }}>{repo.description || 'No description provided.'}</p>
+                <div className="chips" style={{ marginTop: 0, gap: 4 }}>
+                  {repo.technologies.slice(0, 3).map(t => (
+                    <span key={t} className="tech-chip" style={{ fontSize: 9, padding: '2px 4px' }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
       </div>
+
+      {/* Footer watermark (visible in print) */}
+      <footer className="print-only" style={{ display: 'none', textAlign: 'center', marginTop: 48, fontSize: 10, color: '#999', borderTop: '1px dashed #ccc', paddingTop: 16 }}>
+        Verified by <strong>GitIntel Developer Intelligence</strong> • Candidate Report: {bundle.profile.username}
+      </footer>
     </div>
   );
 };
