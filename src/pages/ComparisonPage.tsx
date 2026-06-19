@@ -10,7 +10,7 @@ export default function ComparisonPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
-    setCandidates(storage.getCandidates());
+    storage.getCandidates().then(setCandidates);
   }, []);
 
   const toggleCandidate = (username: string) => {

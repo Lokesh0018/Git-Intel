@@ -9,3 +9,4 @@ coverage/
 frontend/.vite/
 backend/uploads/
 package-lock.json
+.private-key

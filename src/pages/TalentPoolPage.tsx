@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, User, Trash2, Eye, Briefcase, Users } from 'lucide-react';
+import { Search, User, Trash2, Eye, Briefcase, Users, Download } from 'lucide-react';
 import { storage } from '../services/storage';
 import { ProfileBundle } from '../services/api';
 
@@ -15,12 +15,36 @@ export default function TalentPoolPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   useEffect(() => {
-    setCandidates(storage.getCandidates());
+    storage.getCandidates().then(setCandidates);
   }, []);
 
-  const handleDelete = (username: string) => {
-    storage.deleteCandidate(username);
-    setCandidates(storage.getCandidates());
+  const handleDelete = async (username: string) => {
+    await storage.deleteCandidate(username);
+    storage.getCandidates().then(setCandidates);
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Username', 'Name', 'Overall Score', 'Experience', 'Quality', 'Consistency', 'Top Skills'];
+    const rows = filteredCandidates.map(c => [
+      c.profile.username,
+      c.profile.name || '',
+      c.scores.overall.score,
+      c.scores.experience.score,
+      c.scores.quality.score,
+      c.scores.consistency.score,
+      c.insights.strengths.slice(0, 3).join(' / ')
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(v => `"${v}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'gitintel_talent_pool.csv';
+    link.click();
   };
 
   const toggleFilter = (filter: string) => {
@@ -61,8 +85,13 @@ export default function TalentPoolPage() {
           <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Talent Pool</h1>
           <p className="text-secondary">Manage and compare your saved candidates.</p>
         </div>
-        <div className="badge badge-accent" style={{ fontSize: '1.2rem', padding: '0.5rem 1rem' }}>
-          {candidates.length} Candidates
+        <div className="flex gap-4">
+          <button className="btn btn-outline" onClick={handleExportCSV}>
+            <Download size={18} /> Export CSV
+          </button>
+          <div className="badge badge-accent" style={{ fontSize: '1.2rem', padding: '0.5rem 1rem' }}>
+            {candidates.length} Candidates
+          </div>
         </div>
       </div>
 

@@ -16,7 +16,7 @@ export default function SkillBenchmarkPage() {
   const [selectedSkill, setSelectedSkill] = useState('React');
 
   useEffect(() => {
-    setCandidates(storage.getCandidates());
+    storage.getCandidates().then(setCandidates);
   }, []);
 
   const benchmarkData = [

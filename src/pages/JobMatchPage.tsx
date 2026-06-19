@@ -17,11 +17,12 @@ export default function JobMatchPage() {
   const [matchResult, setMatchResult] = useState<any>(null);
 
   useEffect(() => {
-    const saved = storage.getCandidates();
-    setCandidates(saved);
-    if (!initialUsername && saved.length > 0) {
-      setSelectedCandidate(saved[0].profile.username);
-    }
+    storage.getCandidates().then(saved => {
+      setCandidates(saved);
+      if (!initialUsername && saved.length > 0) {
+        setSelectedCandidate(saved[0].profile.username);
+      }
+    });
   }, [initialUsername]);
 
   const handleAnalyze = () => {

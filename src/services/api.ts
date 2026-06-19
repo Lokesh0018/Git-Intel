@@ -66,7 +66,7 @@ import { analyzerService } from './analyzer';
 export const api = {
   async analyze(username: string): Promise<ProfileBundle> {
     // 1. Check if we already have it in storage to save API calls
-    let existing = storage.getCandidate(username);
+    let existing = await storage.getCandidate(username);
     if (existing) {
       // We could re-analyze or just return existing. We will fetch fresh.
     }
@@ -86,10 +86,14 @@ export const api = {
         } catch (e) {
           console.warn(`Could not fetch languages for ${repo.name}`);
         }
-        try {
-          packageJsonsMap[repo.name] = await githubService.getPackageJson(username, repo.name);
-        } catch (e) {
-          console.warn(`Could not fetch package.json for ${repo.name}`);
+        // Smart Fetching: only fetch package.json for JS/TS repos
+        const jsTsLangs = ['JavaScript', 'TypeScript'];
+        if (jsTsLangs.includes(repo.language)) {
+          try {
+            packageJsonsMap[repo.name] = await githubService.getPackageJson(username, repo.name);
+          } catch (e) {
+            console.warn(`Could not fetch package.json for ${repo.name}`);
+          }
         }
       }));
 
@@ -101,13 +105,13 @@ export const api = {
   },
   
   async profile(username: string): Promise<ProfileBundle> {
-    const candidate = storage.getCandidate(username);
+    const candidate = await storage.getCandidate(username);
     if (!candidate) throw new Error('Candidate not found locally. Please analyze first.');
     return candidate;
   },
 
   async jobMatch(username: string, jobDescription: string): Promise<JobMatch> {
-    const candidate = storage.getCandidate(username);
+    const candidate = await storage.getCandidate(username);
     if (!candidate) throw new Error('Candidate not found locally.');
     
     // Deterministic mock job match based on candidate's strengths and the job description
@@ -141,7 +145,7 @@ export const api = {
   },
 
   async report(username: string): Promise<ProfileBundle> {
-    const candidate = storage.getCandidate(username);
+    const candidate = await storage.getCandidate(username);
     if (!candidate) throw new Error('Report not found locally.');
     return candidate;
   }

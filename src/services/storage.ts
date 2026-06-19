@@ -7,24 +7,26 @@ export interface AppSettings {
   githubToken?: string;
 }
 
+import localforage from 'localforage';
+
 export const storage = {
-  getCandidates(): ProfileBundle[] {
+  async getCandidates(): Promise<ProfileBundle[]> {
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const data = await localforage.getItem<ProfileBundle[]>(STORAGE_KEY);
+      return data || [];
     } catch (e) {
-      console.error('Failed to parse candidates from local storage', e);
+      console.error('Failed to get candidates from localforage', e);
       return [];
     }
   },
 
-  getCandidate(username: string): ProfileBundle | undefined {
-    const candidates = this.getCandidates();
+  async getCandidate(username: string): Promise<ProfileBundle | undefined> {
+    const candidates = await this.getCandidates();
     return candidates.find(c => c.profile.username.toLowerCase() === username.toLowerCase());
   },
 
-  saveCandidate(candidate: ProfileBundle): void {
-    const candidates = this.getCandidates();
+  async saveCandidate(candidate: ProfileBundle): Promise<void> {
+    const candidates = await this.getCandidates();
     const existingIndex = candidates.findIndex(c => c.profile.username.toLowerCase() === candidate.profile.username.toLowerCase());
     
     if (existingIndex >= 0) {
@@ -33,13 +35,13 @@ export const storage = {
       candidates.push(candidate);
     }
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(candidates));
+    await localforage.setItem(STORAGE_KEY, candidates);
   },
 
-  deleteCandidate(username: string): void {
-    const candidates = this.getCandidates();
+  async deleteCandidate(username: string): Promise<void> {
+    const candidates = await this.getCandidates();
     const filtered = candidates.filter(c => c.profile.username.toLowerCase() !== username.toLowerCase());
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    await localforage.setItem(STORAGE_KEY, filtered);
   },
 
   getSettings(): AppSettings {

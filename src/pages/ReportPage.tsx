@@ -19,24 +19,25 @@ export default function ReportPage() {
     if (!username) return;
     
     // First try to load from storage
-    const existing = storage.getCandidate(username);
-    if (existing) {
-      setData(existing);
-      setSaved(true);
-      setLoading(false);
-      return;
-    }
+    storage.getCandidate(username).then(existing => {
+      if (existing) {
+        setData(existing);
+        setSaved(true);
+        setLoading(false);
+        return;
+      }
 
-    // Otherwise load from api (which should have it cached if navigated from analyzing)
-    api.analyze(username)
-      .then(d => {
-        setData(d);
-        setLoading(false);
-      })
-      .catch(e => {
-        setError(e.message);
-        setLoading(false);
-      });
+      // Otherwise load from api (which should have it cached if navigated from analyzing)
+      api.analyze(username)
+        .then(d => {
+          setData(d);
+          setLoading(false);
+        })
+        .catch(e => {
+          setError(e.message);
+          setLoading(false);
+        });
+    });
   }, [username]);
 
   const exportPDF = async () => {
@@ -53,9 +54,9 @@ export default function ReportPage() {
     pdf.save(`Candidate_Report_${username}.pdf`);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (data) {
-      storage.saveCandidate(data);
+      await storage.saveCandidate(data);
       setSaved(true);
     }
   };
@@ -87,9 +88,14 @@ export default function ReportPage() {
     <div className="report-container" style={{ paddingBottom: '4rem', paddingTop: '2rem' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Candidate Intelligence Report</h1>
-        <button className="btn btn-outline" onClick={exportPDF}>
-          <Download size={18} /> Export PDF
-        </button>
+        <div className="flex gap-4">
+          <button className="btn btn-outline" onClick={() => window.print()}>
+            <Download size={18} /> Print PDF
+          </button>
+          <button className="btn btn-outline" onClick={exportPDF}>
+            <Download size={18} /> Export Image PDF
+          </button>
+        </div>
       </div>
 
       <div id="report-content" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
