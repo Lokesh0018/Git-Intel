@@ -42,7 +42,16 @@ export default function AnalysisProgressPage() {
         }
       } catch (err: any) {
         if (isMounted) {
-          setError(err.message || 'Analysis failed. Please check the username and try again.');
+          const errMsg = err.message || '';
+          if (errMsg.includes('403') || errMsg.toLowerCase().includes('rate limit')) {
+            let resetTime = null;
+            if (errMsg.includes('|RESET:')) {
+              resetTime = errMsg.split('|RESET:')[1];
+            }
+            navigate('/setup', { state: { resetTime } });
+          } else {
+            setError(errMsg.split('|RESET:')[0] || 'Analysis failed. Please check the username and try again.');
+          }
         }
       }
     };

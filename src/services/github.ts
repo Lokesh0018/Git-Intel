@@ -16,7 +16,16 @@ async function fetchGithub<T>(endpoint: string): Promise<T> {
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `GitHub API error: ${response.status}`);
+    let errorMessage = errorData.message || `GitHub API error: ${response.status}`;
+    
+    if (response.status === 403 || response.status === 429) {
+      const resetTime = response.headers.get('x-ratelimit-reset');
+      if (resetTime) {
+        errorMessage += `|RESET:${resetTime}`;
+      }
+    }
+    
+    throw new Error(errorMessage);
   }
   
   return response.json();

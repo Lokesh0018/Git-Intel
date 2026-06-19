@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom';
 import { Briefcase, Settings } from 'lucide-react';
 import { useState } from 'react';
 import LandingPage from './pages/LandingPage';
@@ -8,6 +8,7 @@ import JobMatchPage from './pages/JobMatchPage';
 import ComparisonPage from './pages/ComparisonPage';
 import TalentPoolPage from './pages/TalentPoolPage';
 import SkillBenchmarkPage from './pages/SkillBenchmarkPage';
+import ApiSetupPage from './pages/ApiSetupPage';
 import SettingsModal from './components/SettingsModal';
 import './styles/main.css';
 
@@ -24,11 +25,11 @@ function App() {
               GitIntel
             </Link>
             <nav className="nav-links">
-              <Link to="/" className="nav-link">Analyze</Link>
-              <Link to="/talent-pool" className="nav-link">Talent Pool</Link>
-              <Link to="/job-match" className="nav-link">Role Analysis</Link>
-              <Link to="/compare" className="nav-link">Compare</Link>
-              <Link to="/benchmark" className="nav-link">Skill Benchmark</Link>
+              <NavLink to="/" className="nav-link" end>Analyze</NavLink>
+              <NavLink to="/talent-pool" className="nav-link">Talent Pool</NavLink>
+              <NavLink to="/job-match" className="nav-link">Role Analysis</NavLink>
+              <NavLink to="/compare" className="nav-link">Compare</NavLink>
+              <NavLink to="/benchmark" className="nav-link">Skill Benchmark</NavLink>
               <button 
                 onClick={() => setIsSettingsOpen(true)}
                 className="btn btn-outline"
@@ -51,6 +52,7 @@ function App() {
             <Route path="/compare" element={<ComparisonPage />} />
             <Route path="/talent-pool" element={<TalentPoolPage />} />
             <Route path="/benchmark" element={<SkillBenchmarkPage />} />
+            <Route path="/setup" element={<ApiSetupPage />} />
           </Routes>
         </main>
         
